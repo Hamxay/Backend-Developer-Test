@@ -1,0 +1,37 @@
+[flake8]
+max-line-length = 120
+extend-ignore = E501
+exclude =
+    .git
+    .venv
+    env
+    __pycache__
+    build
+    dist
+    src/core/db/alembic/versions
+extend-immutable-calls =
+    Depends,
+    fastapi.Depends,
+    fastapi.params.Depends,
+    Query,
+    fastapi.Query,
+    fastapi.params.Query
+
+# flake8-class-attributes-order
+class_attributes_order =
+    constant,
+    field,
+    meta_class
+    nested_class,
+    __new__,
+    __init__,
+    __post_init__,
+    magic_method,
+    property_method,
+    static_method,
+    class_method,
+    methods,
+    private_property_method,
+    private_static_method,
+    private_class_method,
+    private_methods
