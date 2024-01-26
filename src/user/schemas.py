@@ -4,8 +4,8 @@ from enum import Enum
 
 
 class PermissionEnum(str, Enum):
-    # IS_ADMIN = "IS_ADMIN"
-    # IS_MANAGER = "IS_MANAGER"
+    IS_ADMIN = "IS_ADMIN"
+    IS_MANAGER = "IS_MANAGER"
     IS_OPERATOR = "IS_OPERATOR"
 
 
