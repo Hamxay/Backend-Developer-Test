@@ -29,7 +29,6 @@ class AccessToken(BaseModel):
     issued_at: datetime
     expiration_time: datetime
     context: AccessTokenContext
-    organization_id: int | None
 
 
 def require_access_token(
@@ -59,7 +58,6 @@ def require_access_token(
             issued_at=payload["iat"],
             expiration_time=payload["exp"],
             context=payload["ctx"],
-            organization_id=payload.get("org"),
         )
     except (KeyError, ValueError) as e:
         log.warn("Received access token with invalid payload", exc_info=True)
@@ -74,7 +72,6 @@ def require_system_access_token(
 
 
 def require_organization_access_token(
-    organization_id: Annotated[int, Path()],
     access_token: Annotated[AccessToken, Depends(require_access_token)],
 ) -> None:
     if access_token.context == AccessTokenContext.SYSTEM:
@@ -82,6 +79,5 @@ def require_organization_access_token(
 
     if (
         access_token.context != AccessTokenContext.ORGANIZATION
-        or organization_id != access_token.organization_id
     ):
         raise AuthErrors.FORBIDDEN_ORGANIZATION

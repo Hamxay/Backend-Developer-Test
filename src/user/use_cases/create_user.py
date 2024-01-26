@@ -35,7 +35,6 @@ class CreateUser(UseCase):
             self.address_repository = address_repository
 
         async def execute(self, use_case: "CreateUser") -> ResponseUserSchema:
-            organization_id = use_case.organization_id
 
             address = use_case.address
             address_id = None  # Default to None if there's no address
@@ -51,9 +50,9 @@ class CreateUser(UseCase):
 
             user = User(
                 id=user_id,
-                external_id=use_case.external_id,
-                organization_id=organization_id,
-                name=use_case.name,
+                first_name=use_case.first_name,
+                last_name=use_case.last_name,
+                permission=use_case.permission,
                 address=address_id,
             )
             await self.create_user(user)

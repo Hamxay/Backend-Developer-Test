@@ -8,7 +8,6 @@ from src.core.use_cases import UseCase
 
 
 from src.core.auth import require_organization_access_token
-from src.organizations import check_organization_existence
 from src.user.schemas import (
     ResponseUserSchema,
     SuccessResponseSchema, PermissionEnum,
@@ -26,7 +25,6 @@ router = APIRouter(
     tags=["Users"],
     # dependencies=[
     #     Depends(require_organization_access_token),
-    #     Depends(check_organization_existence),
     # ],
 )
 
