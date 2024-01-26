@@ -28,8 +28,8 @@ injector = Injector([CoreModule(), OrganizationModule(), RentalUnitsModule()])
 
 
 app = FastAPI(
-    title="KIWI.KI ERP Integration API",
-    description="API that connects ERP integrations with the KIWI.KI backend",
+    title="FastAPI Boilerplate API",
+    description="FastAPI Boilerplate API",
     version="0.1.0",
     docs_url="/",
     responses={

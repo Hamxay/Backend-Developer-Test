@@ -1,14 +1,8 @@
-# KIWI Housing Component API
-
-API that connects ERP integrations with the KIWI.KI backend
+# FasstAPI Boilerplate API
 
 ## Packages
 
 This project uses **poetry** for dependency management, the rest of the packages are listed in `pyproject.toml`.
-
-### Private GitLab PyPI registry
-To install packages from our private GitLab PyPI registry, read following documentation:
-[python-amqp-client](https://gitlab.kiwi.ki/backend/python-amqp-client#installation-with-poetry)
 
 ## **my[py]**
 [**my[py]**](https://mypy.readthedocs.io/en/stable/getting_started.html) must be used for static typing.
@@ -30,12 +24,8 @@ poetry run src
 docker build .
 ```
 
-with **Docker Compose**
-
-[Compose repository](https://gitlab.kiwi.ki/eng/compose/-/tree/master)
-
 ```
-docker compose up housing-component
+docker compose up src
 ```
 
 ## Database
@@ -72,7 +62,7 @@ Detected added table 'items'
 Detected added index 'ix_items_description' on '['description']'
 Detected added index 'ix_items_id' on '['id']'
 Detected added index 'ix_items_title' on '['title']'
-  Generating /home/kiwi-developer/dev/backend/housing-component/src/core/db/alembic/versions/1676974292_ad61bd71aceb_users_and_items_table.py ...  done
+  Generating /dev/backend/housing-component/src/core/db/alembic/versions/1676974292_ad61bd71aceb_users_and_items_table.py ...  done
   ```
 
 The generated file must be edited and fixed according the needs, then run it:
