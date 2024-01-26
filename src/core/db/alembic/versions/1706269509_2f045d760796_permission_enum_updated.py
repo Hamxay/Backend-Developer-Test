@@ -19,8 +19,8 @@ TABLE_NAME = "user"
 COLUMN_NAME = "permission"
 COLUMN_TYPE_NAME = "permissionenum"
 
-old_type = sa.Enum('IS_OPERATOR', 'ACTIVE', name=COLUMN_TYPE_NAME)
-new_type = sa.Enum('IS_OPERATOR', 'IS_ADMIN', 'IS_MANAGER', name=COLUMN_TYPE_NAME)
+old_type = sa.Enum("IS_OPERATOR", "ACTIVE", name=COLUMN_TYPE_NAME)
+new_type = sa.Enum("IS_OPERATOR", "IS_ADMIN", "IS_MANAGER", name=COLUMN_TYPE_NAME)
 
 
 def upgrade() -> None:
@@ -30,7 +30,7 @@ def upgrade() -> None:
         COLUMN_NAME,
         existing_type=old_type,
         type_=new_type,
-        postgresql_using=f'{COLUMN_NAME}::text::{COLUMN_TYPE_NAME}',
+        postgresql_using=f"{COLUMN_NAME}::text::{COLUMN_TYPE_NAME}",
     )
     # ### end Alembic commands ###
 
@@ -42,6 +42,6 @@ def downgrade() -> None:
         COLUMN_NAME,
         existing_type=new_type,
         type_=old_type,
-        postgresql_using=f'{COLUMN_NAME}::text::{COLUMN_TYPE_NAME}',
+        postgresql_using=f"{COLUMN_NAME}::text::{COLUMN_TYPE_NAME}",
     )
     # ### end Alembic commands ###

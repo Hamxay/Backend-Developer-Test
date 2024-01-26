@@ -1,5 +1,6 @@
 from os import getenv
 from dotenv import load_dotenv
+
 load_dotenv()  # take environment variables from .env.
 AUTO_RELOAD = getenv("AUTO_RELOAD", True) != "0"
 DB_USERNAME = getenv("DB_USERNAME", "postgres")

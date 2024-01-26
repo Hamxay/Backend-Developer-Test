@@ -35,7 +35,6 @@ class CreateUser(UseCase):
             self.address_repository = address_repository
 
         async def execute(self, use_case: "CreateUser") -> ResponseUserSchema:
-
             address = use_case.address
             address_id = None  # Default to None if there's no address
 
@@ -58,15 +57,8 @@ class CreateUser(UseCase):
             await self.create_user(user)
             return await self.prepare_user_response(user_id)
 
-        async def _user_exists(
-            self, user_id: str
-        ) -> bool:
-            return (
-                await self._user_repository.get_by_id(
-                    user_id
-                )
-                is not None
-            )
+        async def _user_exists(self, user_id: str) -> bool:
+            return await self._user_repository.get_by_id(user_id) is not None
 
         async def create_user(self, user: User) -> None:
             try:

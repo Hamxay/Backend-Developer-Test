@@ -90,10 +90,7 @@ class UserRepository(interfaces.UserRepository):
 
     async def delete_by_id(self, user_id: str) -> None:
         session = await self._unit_of_work.get_db_session()
-        delete_query = (
-            delete(User)
-            .where(User.id == user_id)
-        )
+        delete_query = delete(User).where(User.id == user_id)
         await session.execute(delete_query)
         await session.commit()
 

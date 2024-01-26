@@ -77,7 +77,5 @@ def require_organization_access_token(
     if access_token.context == AccessTokenContext.SYSTEM:
         return
 
-    if (
-        access_token.context != AccessTokenContext.ORGANIZATION
-    ):
+    if access_token.context != AccessTokenContext.ORGANIZATION:
         raise AuthErrors.FORBIDDEN_ORGANIZATION

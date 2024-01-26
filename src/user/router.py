@@ -10,7 +10,8 @@ from src.core.use_cases import UseCase
 from src.core.auth import require_organization_access_token
 from src.user.schemas import (
     ResponseUserSchema,
-    SuccessResponseSchema, PermissionEnum,
+    SuccessResponseSchema,
+    PermissionEnum,
 )
 from src.user.use_cases import (
     GetUserList,
@@ -58,9 +59,7 @@ async def create_user(
     handler: Annotated[CreateUser.Handler, Injected(CreateUser.Handler)],
 ) -> ResponseUserSchema:
     use_case_dict = dict(use_case)
-    return await handler.execute(
-        CreateUser(**use_case_dict)
-    )
+    return await handler.execute(CreateUser(**use_case_dict))
 
 
 class AnnotatedUpdateUser(UseCase):
@@ -77,12 +76,7 @@ async def modify_user(
     handler: Annotated[ModifyUser.Handler, Injected(ModifyUser.Handler)],
 ) -> ResponseUserSchema:
     use_case_dict = dict(use_case)  # Convert use_case to a dictionary
-    return await handler.execute(
-        ModifyUser(
-            user_id=user_id,
-            **use_case_dict
-        )
-    )
+    return await handler.execute(ModifyUser(user_id=user_id, **use_case_dict))
 
 
 @router.delete(
@@ -93,9 +87,7 @@ async def modify_user(
 )
 async def delete_user_by_id(
     use_case: Annotated[DeleteUserById, Depends()],
-    handler: Annotated[
-        DeleteUserById.Handler, Injected(DeleteUserById.Handler)
-    ],
+    handler: Annotated[DeleteUserById.Handler, Injected(DeleteUserById.Handler)],
 ) -> SuccessResponseSchema:
     await handler.execute(use_case)
     return SuccessResponseSchema(status="ok")

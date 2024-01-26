@@ -10,17 +10,12 @@ from typing import List
 
 
 class GetUserList(UseCase):
-
-    class Handler(
-        UseCaseHandler["GetUserList", List[ResponseUserSchema]]
-    ):
+    class Handler(UseCaseHandler["GetUserList", List[ResponseUserSchema]]):
         def __init__(
             self,
             user_repository: Inject[UserRepository],
         ) -> None:
             self.user_repository = user_repository
 
-        async def execute(
-            self, use_case: "GetUserList"
-        ) -> List[ResponseUserSchema]:
+        async def execute(self, use_case: "GetUserList") -> List[ResponseUserSchema]:
             return await self.user_repository.get_list()

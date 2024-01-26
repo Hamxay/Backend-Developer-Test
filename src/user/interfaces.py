@@ -13,14 +13,26 @@ class UserRepository(Protocol):
     async def get_list(self) -> Sequence[ResponseUserSchema]:
         ...
 
-    async def create(self, user: User,) -> None:
+    async def create(
+        self,
+        user: User,
+    ) -> None:
         ...
 
-    async def save(self, user: User,) -> None:
+    async def save(
+        self,
+        user: User,
+    ) -> None:
         ...
 
-    async def delete_by_id(self, user_id: str,) -> None:
+    async def delete_by_id(
+        self,
+        user_id: str,
+    ) -> None:
         ...
 
-    async def validate_user_by_id(self, user_id: str,) -> User:
+    async def validate_user_by_id(
+        self,
+        user_id: str,
+    ) -> User:
         ...

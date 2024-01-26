@@ -23,7 +23,9 @@ class GetUserById(UseCase):
             self.address_repository = address_repository
 
         async def execute(self, use_case: "GetUserById") -> ResponseUserSchema:
-            user = await self.rental_unit_repository.get_by_id(use_case.user_id,)
+            user = await self.rental_unit_repository.get_by_id(
+                use_case.user_id,
+            )
             if not user:
                 raise UserErrors.USER_NOT_FOUND
 

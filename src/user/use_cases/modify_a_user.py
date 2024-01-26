@@ -8,7 +8,8 @@ from src.core.utils import (
 from src.user.models import User
 from src.user.schemas import (
     RequestUserSchema,
-    ResponseUserSchema, PermissionEnum,
+    ResponseUserSchema,
+    PermissionEnum,
 )
 from injector import Inject
 from sqlalchemy.exc import IntegrityError
@@ -50,12 +51,8 @@ class ModifyUser(UseCase):
             await self._save_user(user)
             return await self.prepare_user_response(use_case.user_id)
 
-        async def _fetch_and_validate_user(
-            self, user_id: str
-        ) -> User:
-            user = await self._user_repository.validate_user_by_id(
-                user_id
-            )
+        async def _fetch_and_validate_user(self, user_id: str) -> User:
+            user = await self._user_repository.validate_user_by_id(user_id)
             if user is None:
                 raise UserErrors.USER_NOT_FOUND
             return user
@@ -87,7 +84,9 @@ class ModifyUser(UseCase):
                     friendly_message = "An unknown database integrity issue occurred."
                 raise UserErrors.dynamic_error(error_code, friendly_message) from e
 
-        async def prepare_user_response(self, rental_unit_id: str) -> ResponseUserSchema:
+        async def prepare_user_response(
+            self, rental_unit_id: str
+        ) -> ResponseUserSchema:
             user = await self._user_repository.get_by_id(rental_unit_id)
             if not user:
                 raise UserErrors.USER_NOT_FOUND
