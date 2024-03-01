@@ -18,12 +18,13 @@ from src.core.middleware import (
 )
 from src.core.routers import pre_router
 from src.core.schemas import Error
+from src.post.di import PostModule
 from src.user.di import UserModule
 
 log = logging.getLogger(__name__)
 
 
-injector = Injector([CoreModule(), UserModule()])
+injector = Injector([CoreModule(), UserModule(), PostModule()])
 
 
 app = FastAPI(

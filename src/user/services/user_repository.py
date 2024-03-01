@@ -1,98 +1,59 @@
-from src.user.errors import UserErrors
-from src.user.schemas import (
-    AddressSchema,
-    ResponseUserSchema,
-)
-from sqlalchemy import Select, select, delete
-from sqlalchemy.orm import joinedload
-from typing import List, Tuple
-from injector import Inject
-from src.user import interfaces
-from src.user.models import User
+from injector import inject
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.unit_of_work import UnitOfWork
+from src.user.models import User
 
 
-class UserRepository(interfaces.UserRepository):
-    def __init__(self, unit_of_work: Inject[UnitOfWork]) -> None:
+class UserRepository:
+    @inject
+    def __init__(self, unit_of_work: UnitOfWork):
         self._unit_of_work = unit_of_work
 
-    async def get_by_id(self, user_id: str) -> ResponseUserSchema | None:
-        query = self._get_base_query()
-        query = query.where(User.id == user_id)
-
-        query = query.options(joinedload(User.address_rel))
-
+    async def create(self, user: User) -> int:
         session = await self._unit_of_work.get_db_session()
-        result = await session.execute(query)
-
-        if user := result.scalars().one_or_none():
-            address_data = None
-            if user.address_rel:
-                address_data = AddressSchema.model_validate(user.address_rel)
-            return ResponseUserSchema(
-                id=user.id,
-                first_name=user.first_name,
-                last_name=user.last_name,
-                permission=user.permission,
-                address=address_data,
+        async with session.begin():
+            user_db = User(
+                username=user.username,
+                email=user.email,
+                password=user.password
             )
-        return None
+            session.add(user_db)
+        return user_db.id
 
-    async def validate_user_by_id(self, user_id: str) -> User:
-        query = self._get_base_query().where(User.id == user_id)
+    async def get_by_id(self, id: int) -> User:
+        session = await self._unit_of_work.get_db_session()
+        async with session.begin():
+            result = await session.execute(select(User).filter(User.id == id))
+            user = result.scalars().first()
+        return user
+
+    async def get_by_email(self, email: str) -> User:
+        print('hello')
 
         session = await self._unit_of_work.get_db_session()
-        result = await session.execute(query)
-        if user := result.scalars().one_or_none():
-            return user
-        else:
-            raise UserErrors.USER_NOT_FOUND
+        async with session.begin():
+            result = await session.execute(select(User).filter(User.email == email))
+            user = result.scalars().first()
+        return user
 
-    async def get_list(self) -> List[ResponseUserSchema]:
-        query = self._get_base_query()
-
-        query = query.options(
-            joinedload(User.address_rel)  # This adds a join to fetch addresses
-        )
-
+    async def login_with_email_and_pass(self, email, password):
         session = await self._unit_of_work.get_db_session()
-        result = await session.execute(query)
+        async with session.begin():
+            result = await session.execute(select(User).filter(User.email == email, User.password == password))
+            user = result.scalars().first()
+        return user
 
-        users = result.scalars().fetchall()
-
-        response_list = []
-        for user in users:
-            address_data = None
-            if user.address_rel:
-                address_data = AddressSchema.model_validate(user.address_rel)
-
-            response_list.append(
-                ResponseUserSchema(
-                    id=user.id,
-                    first_name=user.first_name,
-                    last_name=user.last_name,
-                    permission=user.permission,
-                    address=address_data,
-                )
-            )
-
-        return response_list
-
-    async def create(self, user: User) -> None:
+    async def update_token(self, user_id: int, token: str) -> None:
+        """
+        Update the JWT token associated with the user in the database.
+        :param user_id: ID of the user whose token needs to be updated
+        :param token: New JWT token to be updated
+        """
         session = await self._unit_of_work.get_db_session()
-        session.add(user)
-        await session.flush([user])
+        async with session.begin():
+            user = await session.get(User, user_id)
+            if user:
+                user.token = token
+                session.add(user)
 
-    async def save(self, user: User) -> None:
-        session = await self._unit_of_work.get_db_session()
-        session.add(user)
-        await session.flush([user])
-
-    async def delete_by_id(self, user_id: str) -> None:
-        session = await self._unit_of_work.get_db_session()
-        delete_query = delete(User).where(User.id == user_id)
-        await session.execute(delete_query)
-        await session.commit()
-
-    def _get_base_query(self) -> Select[Tuple[User]]:
-        return select(User)

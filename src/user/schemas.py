@@ -1,30 +1,20 @@
-from src.addresses.schemas import AddressSchema
-from pydantic import BaseModel
-from enum import Enum
+from pydantic import BaseModel, EmailStr
 
 
-class PermissionEnum(str, Enum):
-    IS_ADMIN = "IS_ADMIN"
-    IS_MANAGER = "IS_MANAGER"
-    IS_OPERATOR = "IS_OPERATOR"
+class User(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
 
 
-class RequestUserSchema(BaseModel):
-    first_name: str
-    last_name: str
-    address: AddressSchema | None
-    permission: PermissionEnum = PermissionEnum.IS_OPERATOR
-
-    class Config:
-        from_attributes = True
+class ResponseUserSchema(BaseModel):
+    token: str
 
 
-class ResponseUserSchema(RequestUserSchema):
-    id: str  # noqa: A003
-
-    class Config:
-        from_attributes = True
+class UserRelation(BaseModel):
+    user_id: int
 
 
-class SuccessResponseSchema(BaseModel):
-    status: str
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
