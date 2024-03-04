@@ -40,7 +40,6 @@ class SignUp(UseCase):
 
             # Generate JWT token
             token = self.generate_token(use_case.user.email)
-            print(token)
             await self._user_repository.update_token(user_id, token)
 
             return await self.prepare_user_response(email, password, token)

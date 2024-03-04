@@ -1,11 +1,6 @@
-from http.client import HTTPException
-
-from fastapi.security import HTTPBasic
 from injector import inject
 from sqlalchemy import select, delete
-from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.unit_of_work import UnitOfWork
-from src.post.token_auth import verify_token
 from src.user.models import User
 from src.post.models import Post
 
@@ -46,9 +41,4 @@ class PostRepository:
         async with session.begin():
             await session.execute(delete(Post).where(Post.id == id))
 
-    async def get_token_by_user_id(self, user_id):
-        session = await self._unit_of_work.get_db_session()
-        async with session.begin():
-            result = await session.execute(select(User).filter(User.id == user_id))
-            user = result.scalars().first()
-        return user.token
+

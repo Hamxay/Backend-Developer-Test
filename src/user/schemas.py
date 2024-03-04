@@ -18,3 +18,9 @@ class UserRelation(BaseModel):
 class UserLoginSchema(BaseModel):
     email: EmailStr
     password: str
+
+
+class TokenSchema(BaseModel):
+    token: str
+    token_type: str
+

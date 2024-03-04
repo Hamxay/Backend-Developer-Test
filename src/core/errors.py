@@ -14,12 +14,6 @@ class AuthErrors:
         403,
     )
 
-    FORBIDDEN_ORGANIZATION = RequestException(
-        "FORBIDDEN_ORGANIZATION",
-        "You're not allowed to access resources of this organization",
-        403,
-    )
-
     UNAUTHORIZED = RequestException(
         "UNAUTHORIZED",
         "You need to be authenticated to perform this request",

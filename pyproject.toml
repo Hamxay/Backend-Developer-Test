@@ -26,6 +26,7 @@ jose = "^1.0.0"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.9"
+cachetools = "^5.3.3"
 
 [tool.poetry.dev-dependencies]
 mypy = "^1.7.1"

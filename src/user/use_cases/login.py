@@ -7,7 +7,7 @@ from injector import Inject
 from src.core.use_cases import UseCase, UseCaseHandler
 from src.user.schemas import (
     ResponseUserSchema,
-    User as UserSchema, UserLoginSchema
+    User as UserSchema, UserLoginSchema, TokenSchema
 )
 from src.user.services.user_repository import (
     UserRepository,
@@ -25,7 +25,7 @@ class Login(UseCase):
         ) -> None:
             self._user_repository = user_repository
 
-        async def execute(self, use_case: "Login") -> ResponseUserSchema:
+        async def execute(self, use_case: "Login") -> TokenSchema:
             user = await self._user_repository.login_with_email_and_pass(
                 email=use_case.user.email,
                 password=use_case.user.password,
@@ -36,16 +36,19 @@ class Login(UseCase):
 
             token = self.generate_token(use_case.user.email)
             await self._user_repository.update_token(user_id, token)
-
             return await self.prepare_user_response(use_case.user.email, use_case.user.password, token)
 
         async def prepare_user_response(
             self, email: str, password: str, token: str
-        ) -> ResponseUserSchema:
+        ) -> TokenSchema:
             user = await self._user_repository.login_with_email_and_pass(email, password)
             if not user:
                 raise UserErrors.USER_NOT_FOUND
-            return user
+            token_response = TokenSchema(
+                token=token,
+                token_type="bearer"
+            )
+            return token_response
 
         def generate_token(self, email: str) -> str:
             # Set the expiration time for the token

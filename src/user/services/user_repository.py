@@ -29,8 +29,6 @@ class UserRepository:
         return user
 
     async def get_by_email(self, email: str) -> User:
-        print('hello')
-
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
             result = await session.execute(select(User).filter(User.email == email))
@@ -57,3 +55,9 @@ class UserRepository:
                 user.token = token
                 session.add(user)
 
+    async def get_token_by_email(self, email) -> User:
+        session = await self._unit_of_work.get_db_session()
+        async with session.begin():
+            result = await session.execute(select(User).filter(User.email == email))
+            user = result.scalars().first()
+        return user

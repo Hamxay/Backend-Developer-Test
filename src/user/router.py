@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 
 from fastapi import APIRouter, Body, Depends
 from fastapi_injector import Injected
-from src.user.schemas import ResponseUserSchema
+from src.user.schemas import ResponseUserSchema, TokenSchema
 from src.user.use_cases import (
     SignUp, Login,
 )
@@ -29,5 +29,5 @@ async def signup(
 async def login(
     use_case: Annotated[Login, Depends()],
     handler: Annotated[Login.Handler, Injected(Login.Handler)],
-) -> ResponseUserSchema:
+) -> TokenSchema:
     return await handler.execute(use_case)
