@@ -38,7 +38,6 @@ class SignUp(UseCase):
             )
             user_id = await self.create_user(user)
 
-            # Generate JWT token
             token = self.generate_token(use_case.user.email)
             await self._user_repository.update_token(user_id, token)
 
@@ -49,10 +48,9 @@ class SignUp(UseCase):
                 return await self._user_repository.create(user)
             except IntegrityError as e:
                 raise e
-                # raise UserErrors.USER_ALREADY_EXISTS from e
 
         async def prepare_user_response(
-            self, email: str, password: str, token: str
+            self, email: str, password: str,
         ) -> ResponseUserSchema:
             user = await self._user_repository.login_with_email_and_pass(email, password)
             if not user:

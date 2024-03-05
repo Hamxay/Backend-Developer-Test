@@ -1,6 +1,5 @@
 from injector import inject
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.unit_of_work import UnitOfWork
 from src.user.models import User
 

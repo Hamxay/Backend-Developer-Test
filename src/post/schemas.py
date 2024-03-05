@@ -13,6 +13,7 @@ class Post(BaseModel):
 
 
 class PostResponseSchema:
+    post_id = str
     description: str
     title: str
     created_by_id: int
@@ -20,3 +21,7 @@ class PostResponseSchema:
 
 class GetPostSChema(BaseModel):
     id: int
+
+
+class AddPostResponseSchema(BaseModel):
+    post_id: str

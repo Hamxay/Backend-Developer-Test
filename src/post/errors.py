@@ -22,6 +22,11 @@ class PostErrors:
         "An error occurred during POST update",
         400,
     )
+    POST_CREATION_ERROR = RequestException(
+        "POST_CREATION_ERROR",
+        "An error occurred while creating a post",
+        404,
+    )
 
     @staticmethod
     def dynamic_error(

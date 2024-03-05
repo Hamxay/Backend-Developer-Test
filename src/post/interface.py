@@ -1,6 +1,6 @@
 from typing import Protocol, runtime_checkable, List, Optional
 from src.post.models import Post
-from src.post.schemas import Post as PostSchema
+from src.post.schemas import Post as PostSchema, AddPostResponseSchema, PostResponseSchema
 
 
 @runtime_checkable
@@ -9,14 +9,14 @@ class PostRepository(Protocol):
         """Delete a post by its ID."""
         ...
 
-    async def get_by_id(self, post_id: int) -> Optional[PostSchema]:
+    async def get_by_id(self, post_id: int) -> PostResponseSchema:
         """Retrieve a post by its ID."""
         ...
 
-    async def create(self, post: PostSchema) -> None:
+    async def create(self, post: PostSchema) -> AddPostResponseSchema:
         """Create a new post."""
         ...
 
-    async def get_all_posts(self) -> List[PostSchema]:
+    async def get_all_posts(self) -> List[PostResponseSchema]:
         """Retrieve all posts."""
         ...

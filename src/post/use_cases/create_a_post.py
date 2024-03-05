@@ -1,6 +1,5 @@
+import uuid
 from typing import Optional
-
-from cachetools import TTLCache
 
 from src.core.errors import AuthErrors
 from src.settings import (
@@ -17,12 +16,10 @@ from sqlalchemy.exc import IntegrityError
 from src.core.use_cases import UseCase, UseCaseHandler
 from src.post.errors import PostErrors
 from src.post.services.post_repository import PostRepository
-from src.post.schemas import Post, PostResponseSchema
+from src.post.schemas import Post, PostResponseSchema, AddPostResponseSchema
 from src.post.models import Post as postDBModel
 from src.user.models import User
 from src.user.services.user_repository import UserRepository
-
-cache = TTLCache(maxsize=100, ttl=300)
 
 
 class CreateAPost(UseCase):
@@ -42,11 +39,13 @@ class CreateAPost(UseCase):
             self,
             use_case: "CreateAPost",
 
-        ) -> PostResponseSchema:
+        ) -> AddPostResponseSchema:
             is_valid = await self.verify_token(use_case.token)
             if is_valid:
+                post_id = str(uuid.uuid4())
                 created_at_str = str(use_case.post.created_at)
                 post = postDBModel(
+                        id=post_id,
                         title=use_case.post.title,
                         description=use_case.post.description,
                         created_at=created_at_str,
@@ -54,8 +53,6 @@ class CreateAPost(UseCase):
                     )
                 post_id = await self.create_post(post)
                 response = await self.prepare_post_response(post_id)
-                cache[use_case.token] = response
-
                 return response
 
         async def create_post(self, post: postDBModel) -> int:
@@ -64,11 +61,11 @@ class CreateAPost(UseCase):
             except IntegrityError as e:
                 raise PostErrors.POST_ALREADY_EXISTS from e
 
-        async def prepare_post_response(self, post_id) -> PostResponseSchema:
+        async def prepare_post_response(self, post_id) -> AddPostResponseSchema:
             post = await self._post_repository.get_by_id(post_id)
             if not post:
                 raise PostErrors.POST_NOT_FOUND
-            return post
+            return post.id
 
         oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/pre/user/login")
 

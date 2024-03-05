@@ -14,6 +14,7 @@ class PostRepository:
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
             post_db = Post(
+                id=post.id,
                 title=post.title,
                 description=post.description,
                 created_at=post.created_at,
@@ -22,21 +23,23 @@ class PostRepository:
             session.add(post_db)
         return post_db.id
 
-    async def get_by_id(self, id: int) -> Post:
+    async def get_by_id(self, id: str) -> Post:
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
             result = await session.execute(select(Post).filter(Post.id == id))
             post = result.scalars().first()
         return post
 
-    async def get_all(self):
+    async def get_posts_with_user_email(self, email):
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
-            result = await session.execute(select(Post))
+            users = await session.execute(select(User).filter(User.email == email))
+            user = users.scalars().first()
+            result = await session.execute(select(Post).filter(Post.created_by_id == user.id))
             posts = result.scalars().all()
         return posts
 
-    async def delete_by_id(self, id: int):
+    async def delete_by_id(self, id: str):
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
             await session.execute(delete(Post).where(Post.id == id))

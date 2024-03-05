@@ -1,14 +1,13 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from src.core.db.models import Base
-from src.user.models import User
 from datetime import datetime
 
 
 class Post(Base):
     __tablename__ = "post"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String(255), primary_key=True)
     title = Column(String(255), nullable=False)
     description = Column(String, nullable=False)
     created_at = Column(String, default=datetime, nullable=False)
