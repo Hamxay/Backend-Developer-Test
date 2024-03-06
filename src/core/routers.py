@@ -5,7 +5,7 @@ from src.user.router import router as user_router
 
 
 pre_router = APIRouter(
-    prefix="/pre",
+            prefix="/pre",
 )
 pre_router.include_router(post_router)
 pre_router.include_router(user_router)

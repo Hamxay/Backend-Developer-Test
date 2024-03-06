@@ -113,17 +113,25 @@ class CreateAPost(UseCase):
             """
             try:
                 # Decode the access token
-                payload = jwt.decode(token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM])
+                payload = jwt.decode(
+                    token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
+                )
                 email: str = payload.get("email")
                 if email is None:
                     # If email not found in token, raise error
-                    raise HTTPException(status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID)
+                    raise HTTPException(
+                        status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID
+                    )
                 else:
                     # Check if the email is valid
                     return await self._user_repository.get_token_by_email(email)
             except jwt.ExpiredSignatureError:
                 # If token has expired, raise error
-                raise HTTPException(status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID)
+                raise HTTPException(
+                    status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID
+                )
             except jwt.DecodeError:
                 # If token decoding fails, raise error
-                raise HTTPException(status_code=401, detail=AuthErrors.ACCESS_TOKEN_DECODE_ERROR)
+                raise HTTPException(
+                    status_code=401, detail=AuthErrors.ACCESS_TOKEN_DECODE_ERROR
+                )

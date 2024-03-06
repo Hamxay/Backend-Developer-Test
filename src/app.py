@@ -28,8 +28,8 @@ injector = Injector([CoreModule(), UserModule(), PostModule()])
 
 
 app = FastAPI(
-    title="FastAPI Boilerplate API",
-    description="FastAPI Boilerplate API",
+    title="Backend Developer Test",
+    description="Backend Developer Test",
     version="0.1.0",
     docs_url="/",
     responses={

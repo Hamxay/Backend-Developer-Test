@@ -26,6 +26,7 @@ class GetAllPosts(UseCase):
     """
     Use case for getting all posts.
     """
+
     token: Optional[str] = None
 
     class Handler(UseCaseHandler["GetAPost", GetPostRequestSchema]):
@@ -74,7 +75,9 @@ class GetAllPosts(UseCase):
                 list[PostResponseSchema]: List of post response schemas.
             """
             try:
-                return await self._post_repository.get_posts_with_user_email(email)
+                posts = await self._post_repository.get_posts_with_user_email(email)
+                if len(posts) < 1:
+                    raise PostErrors.NO_POSTS_ASSOCIATED
             except IntegrityError as e:
                 raise PostErrors.POST_CREATION_ERROR from e
 
@@ -89,14 +92,24 @@ class GetAllPosts(UseCase):
                 User: User object if token is valid.
             """
             try:
-                payload = jwt.decode(token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM])
+                payload = jwt.decode(
+                    token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
+                )
                 email: str = payload.get("email")
                 if email is None:
-                    raise HTTPException(status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID)
+                    raise HTTPException(
+                        status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID
+                    )
                 else:
-                    is_valid_email = await self._user_repository.get_token_by_email(email)
+                    is_valid_email = await self._user_repository.get_token_by_email(
+                        email
+                    )
                     return is_valid_email
             except jwt.ExpiredSignatureError:
-                raise HTTPException(status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID)
+                raise HTTPException(
+                    status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID
+                )
             except jwt.DecodeError:
-                raise HTTPException(status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID)
+                raise HTTPException(
+                    status_code=401, detail=AuthErrors.ACCESS_TOKEN_INVALID
+                )

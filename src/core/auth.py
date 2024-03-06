@@ -56,7 +56,6 @@ def require_access_token(
 
 
 def require_valid_access_token(
-
     access_token: Annotated[AccessToken, Depends(require_access_token)],
 ) -> None:
     utc_now = datetime.now(timezone.utc)

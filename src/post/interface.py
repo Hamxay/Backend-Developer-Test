@@ -1,6 +1,10 @@
 from typing import Protocol, runtime_checkable, List, Optional
 from src.post.models import Post
-from src.post.schemas import Post as PostSchema, AddPostResponseSchema, PostResponseSchema
+from src.post.schemas import (
+    Post as PostSchema,
+    AddPostResponseSchema,
+    PostResponseSchema,
+)
 
 
 @runtime_checkable
@@ -17,6 +21,6 @@ class PostRepository(Protocol):
         """Create a new post."""
         ...
 
-    async def get_all_posts(self) -> List[PostResponseSchema]:
-        """Retrieve all posts."""
+    async def get_posts_with_user_email(self, email):
+        """Retrieve all posts by user email."""
         ...

@@ -1,11 +1,8 @@
-# FasstAPI Boilerplate API
+#   Backend Development Test
 
 ## Packages
 
 This project uses **poetry** for dependency management, the rest of the packages are listed in `pyproject.toml`.
-
-## **my[py]**
-[**my[py]**](https://mypy.readthedocs.io/en/stable/getting_started.html) must be used for static typing.
 
 ## Code Style
 
@@ -17,15 +14,6 @@ poetry run black .
 ## Run locally with **Poetry**
 ```
 poetry run src
-```
-
-## Docker
-```
-docker build .
-```
-
-```
-docker compose up src
 ```
 
 ## Database
@@ -42,7 +30,7 @@ Any file that contains SQLAlchemy models need to be imported in the correspondin
 _Example:_
 
 ```
-import src.rental_units.models
+import src.user.models
 ```
 All the models contained in this module will be found by **alembic**
 

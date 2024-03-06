@@ -27,7 +27,11 @@ class PostErrors:
         "An error occurred while creating a post",
         404,
     )
-
+    NO_POSTS_ASSOCIATED = RequestException(
+        "NO_POSTS_ASSOCIATED",
+        "No posts associated with the current user",
+        404,
+    )
     @staticmethod
     def dynamic_error(
         code: str, message: str, status_code: int = 400
