@@ -8,6 +8,12 @@ class AuthErrors:
         401,
     )
 
+    ACCESS_TOKEN_DECODE_ERROR = RequestException(
+        "ACCESS_TOKEN_DECODE_ERROR",
+        "Access token can not be decoded",
+        401,
+    )
+
     FORBIDDEN = RequestException(
         "FORBIDDEN",
         "You're not allowed to perform this request",

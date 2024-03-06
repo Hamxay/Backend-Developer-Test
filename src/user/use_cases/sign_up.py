@@ -41,7 +41,7 @@ class SignUp(UseCase):
             token = self.generate_token(use_case.user.email)
             await self._user_repository.update_token(user_id, token)
 
-            return await self.prepare_user_response(email, password, token)
+            return await self.prepare_user_response(email, password)
 
         async def create_user(self, user: UserDBModel) -> int:
             try:

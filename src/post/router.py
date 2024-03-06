@@ -1,12 +1,9 @@
 from typing import Annotated
-
 from cachetools import TTLCache
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi_injector import Injected
-from starlette.responses import JSONResponse
-
 from src.core.auth import require_valid_access_token
-from src.post.schemas import AddPostResponseSchema, PostResponseSchema
+from src.post.schemas import AddPostResponseSchema, PostResponseSchema, DeletePostResponse
 from src.post.use_cases.create_a_post import CreateAPost
 from src.post.use_cases.delete_a_post import DeleteAPost
 from src.post.use_cases.get_posts import GetAllPosts
@@ -48,9 +45,7 @@ async def create_a_post(
     return AddPostResponseSchema(post_id=post_id)
 
 
-@router.get("/", description="Get all posts"
-    # , response_model=list[PostResponseSchema]
-            )
+@router.get("/", description="Get all posts", response_model=list[PostResponseSchema])
 async def get_all_post(
     use_case: Annotated[GetAllPosts, Depends()],
     handler: Annotated[GetAllPosts.Handler, Injected(GetAllPosts.Handler)],
@@ -59,11 +54,12 @@ async def get_all_post(
     url_key = str(request.headers.get('authorization'))
     cached_data = cache.get(url_key)
     if cached_data:
-        return cached_data  # Return cached data directly
+        return cache.get("data")  # Return cached data directly
     token = await get_access_token(request)
     use_case.token = token
     response_data = await handler.execute(use_case)
     cache[url_key] = url_key
+    cache["data"] = response_data
     return response_data
 
 
@@ -71,9 +67,13 @@ async def get_all_post(
     "/",
     status_code=status.HTTP_200_OK,
     description="Delete a post",
+    response_model=DeletePostResponse
 )
 async def delete_a_post(
     use_case: Annotated[DeleteAPost, Depends()],
     handler: Annotated[DeleteAPost.Handler, Injected(DeleteAPost.Handler)],
-):
+    request: Request
+) -> DeletePostResponse:
+    token = await get_access_token(request)
+    use_case.token = token
     return await handler.execute(use_case)

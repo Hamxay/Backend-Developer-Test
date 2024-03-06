@@ -33,15 +33,18 @@ class PostRepository:
     async def get_posts_with_user_email(self, email):
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
+            print("db accessed")
             users = await session.execute(select(User).filter(User.email == email))
             user = users.scalars().first()
             result = await session.execute(select(Post).filter(Post.created_by_id == user.id))
             posts = result.scalars().all()
         return posts
 
-    async def delete_by_id(self, id: str):
+    async def delete_by_id(self, id: str, user_id: int) -> bool:
         session = await self._unit_of_work.get_db_session()
         async with session.begin():
-            await session.execute(delete(Post).where(Post.id == id))
-
+            result = await session.execute(
+                delete(Post).where(Post.id == id, Post.created_by_id == user_id)
+            )
+            return bool(result.rowcount)
 
