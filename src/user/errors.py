@@ -17,6 +17,11 @@ class UserErrors:
         "An error occurred during user update",
         400,
     )
+    USER_CREATE_ERROR = RequestException(
+        "USER_CREATE_ERROR",
+        "An error occurred during user creation",
+        400,
+    )
 
     @staticmethod
     def dynamic_error(

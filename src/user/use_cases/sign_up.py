@@ -63,9 +63,13 @@ class SignUp(UseCase):
             :return: ID of the created user.
             """
             try:
-                return await self._user_repository.create(user)
+                user = await self._user_repository.create(user)
+                if user:
+                    return user
+                else:
+                    raise UserErrors.USER_CREATE_ERROR
             except IntegrityError as e:
-                raise e
+                raise UserErrors.USER_CREATE_ERROR
 
         async def prepare_user_response(
             self,
