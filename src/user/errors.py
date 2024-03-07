@@ -9,7 +9,7 @@ class UserErrors:
     )
     USER_ALREADY_EXISTS = RequestException(
         "USER_ALREADY_EXISTS",
-        "This user is already registered with this or another Organization",
+        "Another user is already registered with this email",
         400,
     )
     USER_UPDATE_ERROR = RequestException(
