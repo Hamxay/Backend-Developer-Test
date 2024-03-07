@@ -78,6 +78,8 @@ class GetAllPosts(UseCase):
                 posts = await self._post_repository.get_posts_with_user_email(email)
                 if len(posts) < 1:
                     raise PostErrors.NO_POSTS_ASSOCIATED
+                else:
+                    return posts
             except IntegrityError as e:
                 raise PostErrors.POST_CREATION_ERROR from e
 
