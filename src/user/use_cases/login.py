@@ -1,4 +1,4 @@
-import datetime
+from _datetime import datetime, timezone, timedelta
 
 from jose import jwt
 
@@ -48,15 +48,21 @@ class Login(UseCase):
             if not user:
                 # If user is not found, raise an error
                 raise UserErrors.USER_NOT_FOUND
+            # if the previous token is still valid
+            payload = jwt.decode(
+                user.token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
+            )
+            token_time = payload.get('exp')
+            utc_now = datetime.now(timezone.utc)
+            expiration_time_utc = datetime.utcfromtimestamp(token_time).replace(tzinfo=timezone.utc)
+            if expiration_time_utc < utc_now:
+                # Generate a JWT token for the user
+                token = self.generate_token(use_case.user.email)
 
-            user_id = user.id
-
-            # Generate a JWT token for the user
-            token = self.generate_token(use_case.user.email)
-
-            # Update the user's token in the database
-            await self._user_repository.update_token(user_id, token)
-
+                # Update the user's token in the database
+                await self._user_repository.update_token(user.id, token)
+            else:
+                token = user.token
             # Prepare and return the response containing the token
             return await self.prepare_user_response(
                 use_case.user.email, use_case.user.password, token
@@ -80,8 +86,6 @@ class Login(UseCase):
             if not user:
                 # If user is not found, raise an error
                 raise UserErrors.USER_NOT_FOUND
-
-            # Create a TokenSchema object with the generated token
             token_response = TokenSchema(token=token, token_type="bearer")
             return token_response
 
@@ -93,7 +97,7 @@ class Login(UseCase):
             :return: JWT token.
             """
             # Set the expiration time for the token
-            expires_at = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+            expires_at = datetime.utcnow() + timedelta(hours=1)
 
             # Create a payload for the token
             payload = {"email": email, "exp": expires_at}
