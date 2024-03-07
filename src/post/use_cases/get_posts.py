@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordBearer
 from injector import Inject
 import jwt
@@ -9,14 +9,14 @@ from src.core.use_cases import UseCase, UseCaseHandler
 from src.post.errors import PostErrors
 from src.post.services.post_repository import PostRepository
 from src.post.schemas import GetPostRequestSchema, PostResponseSchema
-from src.settings import ACCESS_TOKEN_SECRET_KEY, ACCESS_TOKEN_ALGORITHM
+from src.settings import ACCESS_TOKEN_SECRET_KEY, ACCESS_TOKEN_ALGORITHM, OAUTH_TOKEN_URL
 from src.user.services.user_repository import UserRepository
 from src.user.models import User
 
 import cachetools
 
 # OAuth2 Password Bearer for token authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/pre/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=OAUTH_TOKEN_URL)
 
 # Cache for storing post data for a certain amount of time
 cache = cachetools.TTLCache(maxsize=100, ttl=300)  # Cache for 5 minutes
@@ -27,7 +27,7 @@ class GetAllPosts(UseCase):
     Use case for getting all posts.
     """
 
-    token: Optional[str] = None
+    token: Optional[str] = Depends(oauth2_scheme)
 
     class Handler(UseCaseHandler["GetAPost", GetPostRequestSchema]):
         """

@@ -3,7 +3,7 @@ from typing import Optional
 from src.core.errors import AuthErrors
 from src.settings import (
     ACCESS_TOKEN_ALGORITHM,
-    ACCESS_TOKEN_SECRET_KEY,
+    ACCESS_TOKEN_SECRET_KEY, OAUTH_TOKEN_URL,
 )
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -20,14 +20,14 @@ from src.user.models import User
 from src.user.services.user_repository import UserRepository
 
 # OAuth2 password bearer flow for token handling
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/pre/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=OAUTH_TOKEN_URL)
 
 
 class CreateAPost(UseCase):
     """Use case to create a post."""
 
     post: Post
-    token: Optional[str] = None
+    token: Optional[str] = Depends(oauth2_scheme)
 
     class Handler(UseCaseHandler["CreateAPost", Post]):
         """Handler for the create post use case."""

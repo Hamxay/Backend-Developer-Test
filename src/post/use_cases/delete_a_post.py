@@ -27,7 +27,7 @@ class DeleteAPost(UseCase):
     """Use case to delete a post."""
 
     post: DeletePostRequestSchema
-    token: Optional[str] = None
+    token: Optional[str] = Depends(oauth2_scheme)
 
     class Handler(UseCaseHandler["DeleteAPost", DeletePostRequestSchema]):
         """Handler for the delete post use case."""

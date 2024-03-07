@@ -2,6 +2,7 @@ from _datetime import datetime, timezone, timedelta
 
 from jose import jwt
 
+from src.core.errors import AuthErrors
 from src.settings import ACCESS_TOKEN_SECRET_KEY, ACCESS_TOKEN_ALGORITHM, ACCESS_TOKEN_Time_DELTA
 from src.user.errors import UserErrors
 from injector import Inject
@@ -15,7 +16,6 @@ from src.user.schemas import (
 from src.user.services.user_repository import (
     UserRepository,
 )
-
 
 
 class Login(UseCase):
@@ -49,20 +49,15 @@ class Login(UseCase):
                 # If user is not found, raise an error
                 raise UserErrors.USER_NOT_FOUND
             # if the previous token is still valid
-            payload = jwt.decode(
-                user.token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
-            )
-            token_time = payload.get('exp')
-            utc_now = datetime.now(timezone.utc)
-            expiration_time_utc = datetime.utcfromtimestamp(token_time).replace(tzinfo=timezone.utc)
-            if expiration_time_utc < utc_now:
-                # Generate a JWT token for the user
-                token = self.generate_token(use_case.user.email)
-
-                # Update the user's token in the database
-                await self._user_repository.update_token(user.id, token)
-            else:
+            is_valid = await self.validate_token(user.token)
+            if is_valid:
                 token = user.token
+            else:
+                token = self.generate_token(use_case.user.email)
+            # Update the user's token in the database
+            await self._user_repository.update_token(user.id, token)
+            # else:
+            #     token = user.token
             # Prepare and return the response containing the token
             return await self.prepare_user_response(
                 use_case.user.email, use_case.user.password, token
@@ -105,3 +100,16 @@ class Login(UseCase):
             # Generate the JWT token using the payload and secret key
             token = jwt.encode(payload, ACCESS_TOKEN_SECRET_KEY, algorithm=ACCESS_TOKEN_ALGORITHM)
             return token
+
+        async def validate_token(self, token) -> bool:
+            try:
+                payload = jwt.decode(
+                    token, ACCESS_TOKEN_SECRET_KEY, algorithms=[ACCESS_TOKEN_ALGORITHM]
+                )
+                token_time = payload.get('exp')
+                utc_now = datetime.now(timezone.utc)
+                expiration_time_utc = datetime.utcfromtimestamp(token_time).replace(tzinfo=timezone.utc)
+                if expiration_time_utc > utc_now:
+                    return True
+            except (jwt.ExpiredSignatureError, jwt.JWTError, Exception):
+                return False
